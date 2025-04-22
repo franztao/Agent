@@ -2,10 +2,10 @@ import sys
 
 import pandas as pd
 
+sys.path.append('/home/hengtao/code/diagnostic/metax_gpu_diagnostic_suite')
 from agent.prompt.gpu_agonstic import task_description, requirements, prompt
 from agent.tools.llm import get_llm
 
-sys.path.append('/home/hengtao/code/diagnostic/metax_gpu_diagnostic_suite')
 
 from agent.tools.libs.shell_tool import shell_tool
 
