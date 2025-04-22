@@ -20,6 +20,20 @@ def mx_smi_topo__show_mxlk():
     
     pass
 
+def mxvs_p2p__unidirection():
+    tool_input = "/opt/maca/bin/mxvs p2p --unidirection --dst-devices 0 --src-devices 0"
+    r = shell_tool(tool_input)
+
+def mxvs_p2p():
+    tool_input = "/opt/maca/bin/mxvs  --unidirection --dst-devices 0 --src-devices 0"
+    r = shell_tool(tool_input)
+
+def mxvs_ops():
+    tool_input = "/opt/maca/bin/mxvs  ops"
+    r = shell_tool(tool_input)
+
 
 if __name__ == '__main__':
     mx_smi_topo__show_mxlk()
+    mxvs_p2p__unidirection()
+    mxvs_p2p()
