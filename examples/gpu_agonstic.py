@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 
 from agent.prompt.gpu_agonstic import task_description, requirements, prompt
+from agent.tools.llm import get_llm
 
 sys.path.append('/home/hengtao/code/diagnostic/metax_gpu_diagnostic_suite')
 
@@ -64,8 +65,12 @@ def dmesg_T():
 
 def llm_get_judge_result():
     src = r"C:\Users\m01216.METAX-TECH\Desktop\2025\Apr\agent\操作手册(2).xlsx"
+    src = r"/home/hengtao/操作手册(2).xlsx"
+    dst = r'/home/hengtao/result.xlsx'
     df = pd.read_excel(src, sheet_name='Sheet1')
 
+    pts = []
+    rs = []
     for ind, row in df.iterrows():
         role = row['Item']
         comd = row['操作命令']
@@ -83,9 +88,15 @@ def llm_get_judge_result():
         output_demand = '''不管判断是不是坏卡，都需要输出判断的根据和理由"）。
         '''
 
-        requirement = prompt.format(goal=goal, memory_short=memory_short,
-                                    memory_long=memory_long, output_demand=output_demand)
-        print(requirement)
+        pt = prompt.format(goal=goal, memory_short=memory_short,
+                           memory_long=memory_long, output_demand=output_demand)
+        print(pt)
+        r = get_llm(pt)
+        print(r)
+        rs.append(r)
+        pts.append(pt)
+    df = pd.DataFrame({"pts": pts, "rs": rs})
+    df.to_excel(dst)
 
 
 if __name__ == '__main__':

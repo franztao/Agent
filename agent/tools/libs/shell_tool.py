@@ -17,7 +17,7 @@ from langchain_core.runnables import (
 
 # from metagpt.tools.tool_registry import register_tool
 
-from metagpt.logs import logger
+# from metagpt.logs import logger
 
 
 # @register_tool(tags=["shell_tool"])
@@ -77,10 +77,10 @@ def shell_tool(tool_input: Union[str, dict[str, Any]],
                         tool_call_id=tool_call_id, kwargs=kwargs)
         # result="success"
     except Exception as e:
-        logger.error(e)
+        print(e)
         result = "call  error"
     result='```工具调用结果如下：\n'+result+'\n```'
-    logger.info(f"shell run is {result}")
+    print(f"shell run is {result}")
 
     return result
 
