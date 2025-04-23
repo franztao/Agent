@@ -83,7 +83,7 @@ def llm_get_judge_result():
         # 再通过shell工具查看当前环境是否具备运行调试等的条件
         r = shell_tool(comd.replace('\n', ' & '))
         # r=comd.replace('\n', ' & ')
-        memory_short = r
+        memory_short = r[0:10000]
         memory_long = remark
         output_demand = '''不管判断是不是坏卡，都需要输出判断的根据和理由"）。
         '''
