@@ -4,13 +4,18 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import os
+import random
+import time
+from datetime import datetime, timedelta
+
 from airflow import DAG
 from airflow.exceptions import AirflowException
-from airflow.providers.standard.operators.bash import BashOperator
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
 
 from agent.tools.libs.shell_tool import shell_tool
-
+# pip install apache-airflow==2.10.5
 # 共享配置
 ABORT_FLAG_PATH = os.path.join(Path(__file__), '/tmp/abort_flag')
 TEMP_LOG_PATH = os.path.join(Path(__file__), '/tmp/temperature.log')
@@ -114,7 +119,7 @@ def monitor_temperature(**kwargs):
 
 
 with DAG(
-        'enhanced_stress_test',
+        'mx_debug_0424',
         default_args={
             'owner': 'airflow',
             # 'start_date': datetime(2023, 1, 1),
