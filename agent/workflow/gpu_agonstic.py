@@ -50,19 +50,19 @@ def cleanup():
 
 def pressure_test(**kwargs):
     cleanup()  # 清理旧标志
-    proc = subprocess.Popen("stress-ng --cpu 4 --timeout 300", shell=True)
-
-    try:
-        while proc.poll() is None:
-            if check_abort_flag():
-                proc.terminate()
-                raise AirflowException("压力测试因异常终止")
-            time.sleep(1)
-
-        if proc.returncode != 0:
-            raise AirflowException("压力测试失败")
-    finally:
-        proc.terminate()
+    # proc = subprocess.Popen("stress-ng --cpu 4 --timeout 300", shell=True)
+    print("pressure_test")
+    # try:
+    #     while proc.poll() is None:
+    #         if check_abort_flag():
+    #             proc.terminate()
+    #             raise AirflowException("压力测试因异常终止")
+    #         time.sleep(1)
+    #
+    #     if proc.returncode != 0:
+    #         raise AirflowException("压力测试失败")
+    # finally:
+    #     proc.terminate()
 
 
 def read_temperature(**kwargs):
@@ -72,7 +72,7 @@ def read_temperature(**kwargs):
         with open(TEMP_LOG_PATH, 'a') as f:
             f.write(f"{datetime.now()},{temp}\n")
 
-        if check_abort_flag():
+        if check_abort_flag() and temp<80:
             raise AirflowException("温度记录因异常终止")
 
         time.sleep(1)

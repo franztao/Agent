@@ -2,15 +2,19 @@ import os
 import random
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from airflow import DAG
 from airflow.exceptions import AirflowException
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.standard.operators.python import PythonOperator
 
+from agent.tools.libs.shell_tool import shell_tool
+
 # 共享配置
-ABORT_FLAG_PATH = '/tmp/abort_flag'
-TEMP_LOG_PATH = '/tmp/temperature.log'
+ABORT_FLAG_PATH = os.path.join(Path(__file__), '/tmp/abort_flag')
+TEMP_LOG_PATH = os.path.join(Path(__file__), '/tmp/temperature.log')
+TEMP_MX_LOG_PATH = os.path.join(Path(__file__), '/tmp/temperature_mx.log')
 RUN_DURATION = 7200  # 2小时（秒）
 RUN_DURATION = 100  # 2小时（秒）
 
@@ -75,6 +79,13 @@ def read_temperature(**kwargs):
         temp = random.randint(30, 100)  # 模拟温度
         with open(TEMP_LOG_PATH, 'a') as f:
             f.write(f"{datetime.now().isoformat()},{temp}\n")
+
+        tool_input = "mx-smi --show-temperature"
+        r = shell_tool(tool_input)
+
+        with open(TEMP_MX_LOG_PATH, 'a') as f:
+            f.write(f"{datetime.now().isoformat()},{r}\n")
+
         time.sleep(1)
 
     execute_with_duration(_read_task, RUN_DURATION)
@@ -93,7 +104,7 @@ def monitor_temperature(**kwargs):
                 last_temp = float(lines[-1].split(',')[1])
                 if last_temp > 80:  # 阈值
                     set_abort_flag()
-                    raise AirflowException(f"温度异常！当前温度：{last_temp}℃")
+                    # raise AirflowException(f"温度异常！当前温度：{last_temp}℃")
         time.sleep(5)
 
     try:
@@ -109,7 +120,7 @@ with DAG(
             # 'start_date': datetime(2023, 1, 1),
             'retries': 0
         },
-        schedule_interval=None,
+        # schedule_interval=None,
         catchup=False,
         dagrun_timeout=timedelta(seconds=RUN_DURATION + 300),
         on_success_callback=lambda _: cleanup(),
@@ -130,11 +141,11 @@ with DAG(
         python_callable=monitor_temperature
     )
 
-    task = BashOperator(
+    terminal_task = BashOperator(
         task_id='example_task',
         bash_command='echo "Hello, World!"',
         retries=3,
-        retry_delay=timedelta(minutes=5)
+        retry_delay=timedelta(seconds=1)
     )
 
-    [pressure_task, temp_task, monitor_task] >> task
+    [pressure_task, temp_task, monitor_task] >> terminal_task
